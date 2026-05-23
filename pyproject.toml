@@ -6,14 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "PySide6>=6.7",
+    "imageio-ffmpeg>=0.6",
     "Pillow>=10.4",
     "pypdf>=4.3",
+    "pymupdf>=1.24",
     "requests>=2.32",
 ]
 
 [project.optional-dependencies]
 ocr = ["paddleocr>=2.7"]
-pdf = ["pymupdf>=1.24"]
 dev = ["pytest>=8.2", "pyinstaller>=6.9"]
 
 [project.scripts]
@@ -26,4 +27,3 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-

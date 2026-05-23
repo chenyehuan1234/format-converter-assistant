@@ -55,7 +55,7 @@ class ImageEngine(EngineAdapter):
 
 class FFmpegEngine(EngineAdapter):
     def __init__(self, ffmpeg_path: str | None = None) -> None:
-        self.ffmpeg = ffmpeg_path or shutil.which("ffmpeg")
+        self.ffmpeg = ffmpeg_path or shutil.which("ffmpeg") or _imageio_ffmpeg_path()
 
     def can_handle(self, job: ConversionJob) -> bool:
         return job.kind in {MediaKind.AUDIO, MediaKind.VIDEO}
@@ -180,3 +180,11 @@ def _run(cmd: list[str]) -> None:
     if completed.returncode != 0:
         raise ConversionError((completed.stderr or completed.stdout or "外部命令执行失败").strip())
 
+
+def _imageio_ffmpeg_path() -> str | None:
+    try:
+        import imageio_ffmpeg
+
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None

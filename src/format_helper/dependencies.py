@@ -30,7 +30,16 @@ class DependencyManager:
         ]
 
     def ffmpeg_status(self) -> DependencyStatus:
-        return self._exe_status("FFmpeg", "ffmpeg")
+        status = self._exe_status("FFmpeg", "ffmpeg")
+        if status.available:
+            return status
+        try:
+            import imageio_ffmpeg
+
+            path = imageio_ffmpeg.get_ffmpeg_exe()
+            return DependencyStatus("FFmpeg", True, "可用（随 Python 包提供）", path)
+        except Exception:
+            return status
 
     def libreoffice_status(self) -> DependencyStatus:
         return self._exe_status("LibreOffice", "soffice")
@@ -60,6 +69,5 @@ class DependencyManager:
             if not status.available:
                 messages.append(f"{status.name}: {status.detail}")
         if messages:
-            messages.append("自动下载源尚未配置；请先安装缺失组件或在依赖管理器中配置可信下载源。")
+            messages.append("建议：安装 LibreOffice 以启用 Office 文档转换；安装 paddleocr 以启用本地 OCR。")
         return messages or ["所有依赖已经可用。"]
-
