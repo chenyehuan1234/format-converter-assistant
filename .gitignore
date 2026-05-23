@@ -7,5 +7,6 @@ build/
 dist/
 *.spec
 *.egg-info/
+*.zip
 *.log
 *.sqlite3

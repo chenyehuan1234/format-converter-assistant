@@ -35,15 +35,15 @@ class GitHubUpdater:
         response.raise_for_status()
         release = response.json()
         latest = str(release.get("tag_name", "")).lstrip("v")
+        if not latest or _version_tuple(latest) <= _version_tuple(__version__):
+            return UpdateInfo(False, __version__, latest, message="已经是最新版。")
         asset = self._find_manifest_asset(release)
         if not asset:
             return UpdateInfo(False, __version__, latest, message="未找到 latest.json 更新清单。")
         manifest = requests.get(asset, timeout=15).json()
         installer_url = manifest.get("installer_url", "")
         sha256 = manifest.get("sha256", "")
-        if latest and _version_tuple(latest) > _version_tuple(__version__):
-            return UpdateInfo(True, __version__, latest, installer_url, sha256, "发现新版本。")
-        return UpdateInfo(False, __version__, latest, message="已经是最新版。")
+        return UpdateInfo(True, __version__, latest, installer_url, sha256, "发现新版本。")
 
     def download_and_install(self, info: UpdateInfo) -> Path:
         if not info.available or not info.installer_url or not info.sha256:
@@ -86,4 +86,3 @@ def _version_tuple(version: str) -> tuple[int, ...]:
         except ValueError:
             parts.append(0)
     return tuple(parts)
-
